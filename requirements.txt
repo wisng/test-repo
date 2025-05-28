@@ -1,0 +1,10 @@
+--find-links https://download.pytorch.org/whl/cu124
+torch==2.4.0+cu124
+flask
+flask-socketio
+numpy
+cached-path
+soundfile
+pydantic
+f5-tts
+transformers
