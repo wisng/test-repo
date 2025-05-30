@@ -1,4 +1,5 @@
 import io
+from threading import Lock
 import numpy as np
 from typing import Tuple
 from f5_tts.api import F5TTS
@@ -7,6 +8,7 @@ from f5_tts.api import F5TTS
 class TTSService:
     def __init__(self):
         self.f5tts = F5TTS()
+        self.model_lock = Lock()
         print("Successfully loaded F5TTS model")
 
     def process_audio(
@@ -40,22 +42,23 @@ class TTSService:
         cross_fade_duration: float = 0.15,
         ref_text: str = ""
     ) -> tuple[int, np.ndarray]:
-        try:
-            # Process audio directly from memory
-            audio_io.seek(0)
-            print("Processing TTS request...")
-            print("Starting inference...")
-            final_wave, final_sample_rate, _ = self.f5tts.infer(
-                audio_io,
-                ref_text,
-                text_to_generate,
-                cross_fade_duration=cross_fade_duration,
-                speed=speed
-            )
-            print("Successfully processed TTS request")
-            return final_sample_rate, final_wave
-        except Exception as e:
-            raise RuntimeError(f"Error processing TTS request: {str(e)}")
+        with self.model_lock:
+            try:
+                # Process audio directly from memory
+                audio_io.seek(0)
+                print("Processing TTS request...")
+                print("Starting inference...")
+                final_wave, final_sample_rate, _ = self.f5tts.infer(
+                    audio_io,
+                    ref_text,
+                    text_to_generate,
+                    cross_fade_duration=cross_fade_duration,
+                    speed=speed
+                )
+                print("Successfully processed TTS request")
+                return final_sample_rate, final_wave
+            except Exception as e:
+                raise RuntimeError(f"Error processing TTS request: {str(e)}")
 
 
 tts_service = TTSService()
