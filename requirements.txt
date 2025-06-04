@@ -5,6 +5,8 @@ soundfile
 pydantic
 f5-tts
 transformers
+python-socketio
+Flask_SocketIO==5.5.1
 flask-cors
 --extra-index-url https://download.pytorch.org/whl/cu124
 torch==2.4.0+cu124
